@@ -17,6 +17,9 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Dependecies
+        run: bun install
+
       - name: Build
         run: bun vite build
         env:
