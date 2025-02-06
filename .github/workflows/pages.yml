@@ -12,19 +12,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - name: Install Dependecies
-        run: bun install
-
-      - name: Build
-        run: bun vite build
-        env:
-          DB_ACCESS_TOKEN: ${{ secrets.DB_ACCESS_TOKEN }}
-
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v2
         with:
