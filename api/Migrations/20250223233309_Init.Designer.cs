@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250223184550_Init")]
+    [Migration("20250223233309_Init")]
     partial class Init
     {
         /// <inheritdoc />

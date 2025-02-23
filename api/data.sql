@@ -32,8 +32,8 @@ VALUES
 ('Weserstraße', 'GjallePreshevennukelshojm', 'user12@example.com', 12, 1),
 ('Neckartalstr', 'GjallePreshevennukelshojm', 'user13@example.com', 13, 1),
 ('Martin-Luther-Straße', 'GjallePreshevennukelshojm', 'user14@example.com', 14, 1),
-('Am Schwanenplatz', 'GjallePreshevennukelshojm', 'user15@example.com', 14, 1);
-
+('Am Schwanenplatz', 'GjallePreshevennukelshojm', 'user15@example.com', 14, 1),
+('Albert', 'Shqiponja1@?', 'albert@gmail.com', -1, 0);
 
 -- INSERT INTO Users (Username, Password, Email, HouseID, TodayOnly)
 -- VALUES

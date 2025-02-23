@@ -1,12 +1,4 @@
-// const API = "http://localhost:8080/api";
-const API = "https://[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]:443/api";
-// const API = "https://api.shkf-ks.org/api";
-
-// Example fetch request:
-fetch(`${API}/houses`)
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
+const API = "https://api.shkf-ks.org/api";
 
 const getToken = () => localStorage.getItem('authToken');
 
