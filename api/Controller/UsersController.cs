@@ -25,24 +25,41 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public async Task<IActionResult> Register([FromForm] string username, [FromForm] string password, [FromForm] string email)
+    public async Task<IActionResult> Register(
+        [FromForm] string username,
+        [FromForm] string password,
+        [FromForm] string email,
+        [FromForm] int houseId,
+        [FromForm] bool todayOnly)
     {
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(email))
+        // Validate required fields
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
+           string.IsNullOrEmpty(email) || houseId < -1)
         {
             return BadRequest("All fields are required");
         }
+
+        // Verify house exists
+        if(houseId != -1) {
+          var houseExists = db.Houses.Any(h => h.ID == houseId);
+          if (!houseExists)
+          {
+            return BadRequest("Invalid house ID");
+          }
+        }
+
         if (db.Users.Any(u => u.Username == username))
         {
             return Conflict("User already exists!");
         }
 
-        var hashedPassword = HashPassword(password);
-
         var user = new User
         {
             Username = username,
-            Password = hashedPassword,
-            Email = email
+            Password = password,
+            Email = email,
+            HouseID = houseId,
+            TodayOnly = todayOnly
         };
 
         db.Users.Add(user);
@@ -55,7 +72,7 @@ public class UsersController : ControllerBase
     public IActionResult Login([FromForm] string username, [FromForm] string password)
     {
         var user = db.Users.SingleOrDefault(u => u.Username == username);
-        if (user == null || user.Password != HashPassword(password))
+        if (user == null || user.Password != password)
         {
             return Unauthorized("Invalid username or password");
         }
@@ -79,7 +96,11 @@ public class UsersController : ControllerBase
             return NotFound("User not found");
         }
 
-        return Ok(new { username = user.Username });
+        return Ok(new { 
+            username = user.Username,
+            houseId = user.HouseID,
+            todayOnly = user.TodayOnly, 
+        });
     }
 
     private string HashPassword(string password)

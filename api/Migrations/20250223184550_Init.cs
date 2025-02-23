@@ -5,7 +5,7 @@
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,33 +30,14 @@ namespace api.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Username = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false)
+                    Password = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    HouseID = table.Column<int>(type: "INTEGER", nullable: false),
+                    TodayOnly = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Books",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    HouseID = table.Column<int>(type: "INTEGER", nullable: false),
-                    Year = table.Column<int>(type: "INTEGER", nullable: false),
-                    Month = table.Column<int>(type: "INTEGER", nullable: false),
-                    Day = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Books", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Books_Houses_HouseID",
-                        column: x => x.HouseID,
-                        principalTable: "Houses",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -65,14 +46,16 @@ namespace api.Migrations
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    BookID = table.Column<int>(type: "INTEGER", nullable: false),
+                    HouseID = table.Column<int>(type: "INTEGER", nullable: false),
+                    Year = table.Column<int>(type: "INTEGER", nullable: false),
+                    Month = table.Column<int>(type: "INTEGER", nullable: false),
+                    Day = table.Column<int>(type: "INTEGER", nullable: false),
+                    HouseNumber = table.Column<string>(type: "TEXT", nullable: true),
                     RoomNumber = table.Column<string>(type: "TEXT", nullable: true),
                     RepairDescription = table.Column<string>(type: "TEXT", nullable: true),
                     NoticedDate = table.Column<string>(type: "TEXT", nullable: true),
                     CompletedDate = table.Column<string>(type: "TEXT", nullable: true),
                     EmergencyStartTime = table.Column<string>(type: "TEXT", nullable: true),
-                    EmergencyEndTime = table.Column<string>(type: "TEXT", nullable: true),
-                    EmergencyPersonCount = table.Column<int>(type: "INTEGER", nullable: true),
                     TravelInfo = table.Column<string>(type: "TEXT", nullable: true),
                     FeedbackToOffice = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -80,22 +63,17 @@ namespace api.Migrations
                 {
                     table.PrimaryKey("PK_Entries", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Entries_Books_BookID",
-                        column: x => x.BookID,
-                        principalTable: "Books",
+                        name: "FK_Entries_Houses_HouseID",
+                        column: x => x.HouseID,
+                        principalTable: "Houses",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Books_HouseID",
-                table: "Books",
-                column: "HouseID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Entries_BookID",
+                name: "IX_Entries_HouseID",
                 table: "Entries",
-                column: "BookID");
+                column: "HouseID");
         }
 
         /// <inheritdoc />
@@ -106,9 +84,6 @@ namespace api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Books");
 
             migrationBuilder.DropTable(
                 name: "Houses");

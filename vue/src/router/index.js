@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   component: () => import('../App.vue'),
+    // },
     {
-      path: '/',
+      path: '/houses',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/Houses.vue'),
     },
     {
       path: '/login',
@@ -17,15 +21,14 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'Signup',
-      component: () => import('../views/SignUp.vue'),
-      
+      component: () => import('../views/SignUp.vue'), 
     },
     {
-      path: '/:houseAddress',
-      name: 'CommunicationBook',
+      path: '/houses/:houseId',
+      name: 'houses',
       component: () => import('../views/Book.vue'),
-      props: true
     }
+
   ],
 })
 

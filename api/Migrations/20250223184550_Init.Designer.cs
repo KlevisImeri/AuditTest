@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250222214037_InicialCreate")]
-    partial class InicialCreate
+    [Migration("20250223184550_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,47 +18,16 @@ namespace api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
 
-            modelBuilder.Entity("Book", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Day")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("HouseID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("HouseID");
-
-                    b.ToTable("Books");
-                });
-
             modelBuilder.Entity("Entry", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("BookID")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("CompletedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EmergencyEndTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("EmergencyPersonCount")
+                    b.Property<int>("Day")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("EmergencyStartTime")
@@ -66,6 +35,15 @@ namespace api.Migrations
 
                     b.Property<string>("FeedbackToOffice")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("HouseID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("HouseNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NoticedDate")
                         .HasColumnType("TEXT");
@@ -79,9 +57,12 @@ namespace api.Migrations
                     b.Property<string>("TravelInfo")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("ID");
 
-                    b.HasIndex("BookID");
+                    b.HasIndex("HouseID");
 
                     b.ToTable("Entries");
                 });
@@ -107,9 +88,19 @@ namespace api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("HouseID")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("TodayOnly")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -120,10 +111,10 @@ namespace api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Book", b =>
+            modelBuilder.Entity("Entry", b =>
                 {
                     b.HasOne("House", "House")
-                        .WithMany("CommunicationBooks")
+                        .WithMany("Entries")
                         .HasForeignKey("HouseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -131,25 +122,9 @@ namespace api.Migrations
                     b.Navigation("House");
                 });
 
-            modelBuilder.Entity("Entry", b =>
-                {
-                    b.HasOne("Book", "Book")
-                        .WithMany("Entries")
-                        .HasForeignKey("BookID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("Book", b =>
-                {
-                    b.Navigation("Entries");
-                });
-
             modelBuilder.Entity("House", b =>
                 {
-                    b.Navigation("CommunicationBooks");
+                    b.Navigation("Entries");
                 });
 #pragma warning restore 612, 618
         }

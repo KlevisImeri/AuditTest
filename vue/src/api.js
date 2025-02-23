@@ -1,85 +1,118 @@
-const API = "http://localhost:5184/api";
+// const API = "http://localhost:5184/api";
+const API = "http://[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]:8080/api";
 
-export async function getBooksByHouseId(houseId) {
-  try {
-    const response = await fetch(`${API}/books/house/${houseId}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch books');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching books:', error);
-    throw error;
-  }
-}
+// Example fetch request:
+fetch(`${API}/houses`)
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
 
-export async function getBook(houseAddress, year, month, day) {
-  try {
-    const params = new URLSearchParams({ houseAddress, year, month, day });
-    const response = await fetch(`${API}/books?${params}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch communication book');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching communication book:', error);
-    throw error;
-  }
-}
+const getToken = () => localStorage.getItem('authToken');
 
-export async function getEntriesByBookId(bookId) {
-  try {
-    const response = await fetch(`${API}/entries/book/${bookId}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch entries');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching entries:', error);
-    throw error;
+const createHeaders = () => {
+  const token = getToken();
+  if (token) {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
   }
-}
+  return {
+    'Content-Type': 'application/json'
+  };
+};
+
+const fetchData = async (url, options = {}) => {
+  const headers = createHeaders();
+  const mergedOptions = { ...options, headers };
+
+  const response = await fetch(url, mergedOptions);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || `Failed to fetch ${url}`);
+  }
+  return await response.json();
+};
 
 export async function getHouses() {
   try {
-    const response = await fetch(`${API}/Houses`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch houses');
-    }
-    return await response.json();
+    return await fetchData(`${API}/Houses`);
   } catch (error) {
     console.error('Error fetching houses:', error);
     throw error;
   }
 }
 
-export async function signUp(username, password, email) {
+export async function getHouseById(id) {
   try {
-    const response = await fetch(`${API}/users/signup`, {
+    return await fetchData(`${API}/Houses/${id}`);
+  } catch (error) {
+    console.error('Error fetching house:', error);
+    throw error;
+  }
+}
+
+export async function getEntries(houseId, year, month, day) {
+  const params = new URLSearchParams();
+
+  if (houseId) params.append('houseId', houseId);
+  if (year) params.append('year', year);
+  if (month) params.append('month', month);
+  if (day) params.append('day', day);
+
+  try {
+    return await fetchData(`${API}/Entries?${params}`);
+  } catch (error) {
+    console.error('Error fetching entries:', error);
+    throw error;
+  }
+}
+
+export async function updateEntries(entries) {
+  try {
+    return await fetchData(`${API}/Entries/UpdateEntries`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
+      body: JSON.stringify(entries),
+    });
+  } catch (error) {
+    console.error('Error updating entries:', error);
+    throw error;
+  }
+}
+
+export async function deleteEntries(ids) {
+    try {
+        console.log(ids)
+        const params = new URLSearchParams();
+        ids.forEach(id => params.append('ids', id));
+        console.log(params)
+
+        await fetchData(`${API}/Entries?${params}`, {
+            method: 'DELETE',
+        });
+    } catch (error) {
+        console.error('Error deleting entries:', error);
+        // throw error;
+    }
+}
+
+export async function signUp(username, password, email, houseId, todayOnly) {
+  try {
+    return await fetchData(`${API}/users/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         username,
         password,
         email,
+        houseId,
+        todayOnly
       })
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Signup failed');
-    }
-
-    return await response.json();
   } catch (error) {
     console.error('Error:', error);
-    throw error
+    throw error;
   }
 };
 
@@ -95,17 +128,15 @@ export async function login(username, password) {
         password,
       })
     });
-    // console.debug(response)
-
 
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Login failed');
     }
-    
+
     const data = await response.json();
     localStorage.setItem('authToken', data.token);
-    return data
+    return data;
   } catch (error) {
     console.error('Login error:', error);
     throw error;
@@ -114,25 +145,11 @@ export async function login(username, password) {
 
 export async function validateToken() {
   try {
-    const token = localStorage.getItem('authToken');
-    if (!token) throw new Error('No token found');
-
-    const response = await fetch(`${API}/users/validate-token`, {
+    return await fetchData(`${API}/users/validate-token`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Token validation failed');
-    }
-
-    return await response.json();
   } catch (error) {
     console.error('Token validation error:', error);
     throw error;
   }
 }
-

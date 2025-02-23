@@ -3,23 +3,36 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue';
+import { RouterView } from 'vue-router';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { validateToken } from "@/api.js"
+import { validateToken } from '@/api.js';
 
 const router = useRouter();
 
 const checkToken = async () => {
   const token = localStorage.getItem('authToken');
-  if (token) {
-    try {
-      const data = await validateToken();
-      router.push(`/${data.username}`);
-    } catch (error) {
-      router.push('/login');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  try {
+    const data = await validateToken();
+    const query = {};
+
+    if (data.houseId != -1) {
+      if (data.todayOnly) {
+        const today = new Date();
+        query.year = today.getFullYear();
+        query.month = String(today.getMonth() + 1).padStart(2, '0');
+        query.day = String(today.getDate()).padStart(2, '0');
+      }
+      router.push({ path: `/houses/${data.houseId}`, query });
+    } else {
+      router.push({ path: `/houses/`, query });
     }
-  } else {
+  } catch (error) {
     router.push('/login');
   }
 };

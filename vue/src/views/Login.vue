@@ -2,6 +2,12 @@
   <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-white">
     <div class="bg-white p-8 rounded-2xl shadow-lg w-80 transition-all duration-300 hover:shadow-xl">
       <h1 class="text-3xl font-bold mb-6 text-center text-blue-900">Willkommen zurück</h1>
+      
+      <!-- Status Message -->
+      <div v-if="statusMessage" :class="statusType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" class="p-3 mb-4 rounded-lg text-center">
+        {{ statusMessage }}
+      </div>
+
       <form @submit.prevent="loginForm" class="flex flex-col">
         <div class="mb-6">
           <input 
@@ -44,13 +50,18 @@ import { login } from '@/api.js';
 const router = useRouter();
 const formUsername = ref('');
 const formPassword = ref('');
+const statusMessage = ref('');
+const statusType = ref('');
 
 const loginForm = async () => {
   try {
-    const data = await login(formUsername.value, formPassword.value)
-    router.push('/');
+    const data = await login(formUsername.value, formPassword.value);
+    statusMessage.value = 'Login erfolgreich!';
+    statusType.value = 'success';
+    router.push('/houses');
   } catch (error) {
-    alert('Login failed');
+    statusMessage.value = 'Login fehlgeschlagen';
+    statusType.value = 'error';
     console.error('Error:', error);
   }
 };
