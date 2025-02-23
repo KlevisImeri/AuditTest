@@ -84,4 +84,4 @@ app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.Run("http://*:8080");
+app.Run("http://*:443");
