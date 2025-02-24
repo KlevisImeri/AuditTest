@@ -181,6 +181,10 @@ onMounted(async () => {
   }
 });
 
+onUnmounted(async () => {
+  await saveChanges();
+});
+
 const saveChanges = async () => {
   try {
     if(entries.value.length === 0) return;
