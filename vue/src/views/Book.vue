@@ -1,24 +1,24 @@
 <template>
   <div class="p-3">
-
-    <div class="flex items-center justify-between font-bold mb-3">
-      <p class="text-lg font-bold mr-2">Kommunikationsbuch</p>
-      <div class="flex flex-col items-center">
-        <p class="text-md">Gebäudename: {{address}}</p>
-        <p class="text-md text-right">Monat und Jahr: {{formattedDate}}</p>
-      </div>
-      <p class="text-md">K-V-I Gebäudemanagement</p>
-    </div>
-
-
     <div v-if="error" class="bg-red-500 text-white p-4 rounded">
       {{ error }}
-    </div>
+    </div><div v-else>
+      <table class="report-header"> 
+        <thead class="report-header">
 
-    <div v-else>
+          <tr>
+            <th colspan="9">
+              <div class="flex items-center justify-between font-bold mb-3 p-3">
+                <p class="text-lg font-bold mr-2">Kommunikationsbuch</p>
+                <div class="flex flex-col items-center">
+                  <p class="text-md">Gebäudename: {{ address }}</p>
+                  <p class="text-md text-right">Monat und Jahr: {{ formattedDate }}</p>
+                </div>
+                <p class="text-md">K-V-I Gebäudemanagement</p>
+              </div>
+            </th>
+          </tr>
 
-      <table>
-        <thead>
           <tr class="bg-gray-100">
             <th class="border px-1">Pos.</th>
             <th class="border px-1">Haus-Nr.</th>
@@ -30,9 +30,10 @@
             <th class="border px-1">Anfahrt</th>
             <th class="border px-1">Rückinfo ans Amt</th> 
           </tr>
+
         </thead>
 
-        <tbody>
+        <tbody class="report-content">
           <tr v-for="(entry, index) in entries" :key="entry.id" class="text-center" 
             :class="{ 'bg-red-200': entry.deleted, 'bg-gray-200': entry.edited}" >
 
@@ -129,9 +130,9 @@
           </tr>
 
         </tbody>
-
       </table>
     </div>
+
     <div class="mt-4 flex">
       <AddIcon class="text-blue-500 hover:text-red-500 print:hidden" @click="addNewEntry" />
       <SaveIcon class="text-green-500 hover:text-red-500 print:hidden" @click="saveChanges" />
@@ -158,9 +159,9 @@ const { year, month, day } = route.query;
 
 const formattedDate = computed(() => {
   if (year && month && day) {
-    const date = new Date(Number(year), Number(month) - 1, Number(day)); // Month is 0-indexed
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    const date = new Date(Number(year), Number(month) - 1, Number(day));
+    const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long' });
+    return `${date.getDate()} ${monthFormatter.format(date)} ${date.getFullYear()}`;
   }
   return '';
 });
@@ -236,3 +237,21 @@ onUnmounted(() => {
   });
 });
 </script>
+
+<style>
+@media print {
+  .report-header {
+    display: table-header-group;
+  }
+  
+  table.report-container {
+    page-break-after: always;
+    width: 100% !important;
+  }
+  
+  /* Ensure header doesn't get cut off between pages */
+  thead.report-header th {
+    break-inside: avoid;
+  }
+}
+</style>
