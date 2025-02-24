@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @media print {
-  body {
-    width: 99%;
+  @page {
+    size: auto;  /* Use default paper size */
+    scale: 0.99; /* Modern browsers (Chrome 111+) */
   }
 }

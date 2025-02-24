@@ -3,7 +3,7 @@
     ref="textarea"
     v-model="textValue"
     @input="resize"
-    class="w-full p-1"
+    rows="1"
   ></textarea>
 </template>
 

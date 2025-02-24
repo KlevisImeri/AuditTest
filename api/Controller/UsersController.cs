@@ -24,50 +24,50 @@ public class UsersController : ControllerBase
         log = logger;
     }
 
-    [HttpPost("signup")]
-    public async Task<IActionResult> Register(
-        [FromForm] string username,
-        [FromForm] string password,
-        [FromForm] string email,
-        [FromForm] int houseId,
-        [FromForm] bool todayOnly)
-    {
-        // Validate required fields
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
-           string.IsNullOrEmpty(email) || houseId < -1)
-        {
-            return BadRequest("All fields are required");
-        }
-
-        // Verify house exists
-        if(houseId != -1) {
-          var houseExists = db.Houses.Any(h => h.ID == houseId);
-          if (!houseExists)
-          {
-            return BadRequest("Invalid house ID");
-          }
-        }
-
-        if (db.Users.Any(u => u.Username == username))
-        {
-            return Conflict("User already exists!");
-        }
-
-        var user = new User
-        {
-            Username = username,
-            Password = password,
-            Email = email,
-            HouseID = houseId,
-            TodayOnly = todayOnly
-        };
-
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        return Ok(new { message = "User registered successfully" });
-    }
-
+    // [HttpPost("signup")]
+    // public async Task<IActionResult> Register(
+    //     [FromForm] string username,
+    //     [FromForm] string password,
+    //     [FromForm] string email,
+    //     [FromForm] int houseId,
+    //     [FromForm] bool todayOnly)
+    // {
+    //     // Validate required fields
+    //     if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
+    //        string.IsNullOrEmpty(email) || houseId < -1)
+    //     {
+    //         return BadRequest("All fields are required");
+    //     }
+    //
+    //     // Verify house exists
+    //     if(houseId != -1) {
+    //       var houseExists = db.Houses.Any(h => h.ID == houseId);
+    //       if (!houseExists)
+    //       {
+    //         return BadRequest("Invalid house ID");
+    //       }
+    //     }
+    //
+    //     if (db.Users.Any(u => u.Username == username))
+    //     {
+    //         return Conflict("User already exists!");
+    //     }
+    //
+    //     var user = new User
+    //     {
+    //         Username = username,
+    //         Password = password,
+    //         Email = email,
+    //         HouseID = houseId,
+    //         TodayOnly = todayOnly
+    //     };
+    //
+    //     db.Users.Add(user);
+    //     await db.SaveChangesAsync();
+    //
+    //     return Ok(new { message = "User registered successfully" });
+    // }
+    //
     [HttpPost("login")]
     public IActionResult Login([FromForm] string username, [FromForm] string password)
     {
