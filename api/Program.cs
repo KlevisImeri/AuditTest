@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.HostFiltering;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,10 +66,25 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
             "/etc/ssl/certs/domain.cert.pem",
             "/etc/ssl/private/private.key.pem"
         );
-        listenOptions.UseHttps(certificate);
+        listenOptions.UseHttps(options => {
+            options.ServerCertificate = certificate;
+            options.ServerCertificateSelector = (connectionContext, name) => {
+                return certificate;
+            };
+        });
     });
     
     serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
+});
+
+
+builder.Services.Configure<HostFilteringOptions>(options =>
+{
+    options.AllowedHosts = new List<string>
+    {
+        "api.shkf-ks.org",
+        "[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]"
+    };
 });
 
 // File upload configuration
