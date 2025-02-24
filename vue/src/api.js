@@ -1,4 +1,5 @@
-const API = "https://api.shkf-ks.org/api";
+const API = "https://[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]:443/api";
+// const API = "https://api.shkf-ks.org/api";
 
 const getToken = () => localStorage.getItem('authToken');
 
