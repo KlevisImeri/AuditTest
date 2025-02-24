@@ -51,11 +51,11 @@
               />
             </td>
             <td class="border">
-              <textarea 
+              <Textarea 
                 v-model="entry.repairDescription" 
                 class="w-full p-1" 
                 @input="entry.edited = true"
-              ></textarea>
+              ></Textarea>
             </td>
             <td class="border">
               <input 
@@ -147,6 +147,7 @@ import { getHouseById, getEntries, updateEntries, deleteEntries } from '@/api.js
 import BinIcon from '../components/icons/Bin.vue'
 import SaveIcon from '../components/icons/Save.vue'
 import AddIcon from '../components/icons/Add.vue'
+import Textarea from '../components/Textarea.vue'
 
 const route = useRoute();
 const address = ref('');
