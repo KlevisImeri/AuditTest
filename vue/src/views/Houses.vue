@@ -87,7 +87,7 @@ onMounted(async () => {
     // Set default values to current date
     const today = new Date()
     year.value = today.getFullYear().toString()
-    month.value = (today.getMonth() + 1).toString() // Months are 0-indexed
+    month.value = (today.getMonth() + 1).toString()
     day.value = today.getDate().toString()
   } catch (err) {
     console.error('Error fetching houses:', err)
@@ -102,9 +102,10 @@ const openModal = (houseId: number) => {
 
 const closeModal = () => {
   isModalOpen.value = false
-  year.value = ''
-  month.value = ''
-  day.value = ''
+  const today = new Date()
+  year.value = today.getFullYear().toString()
+  month.value = (today.getMonth() + 1).toString()
+  day.value = today.getDate().toString()
   yearError.value = false
   monthError.value = false
   dayError.value = false

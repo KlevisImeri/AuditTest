@@ -5,4 +5,4 @@ https://klevisimeri.github.io/AuditTest/
 
 ## Todo
 - Claudefare remove developer mode
-- Fix the title of exel to be in every page
+- Fixed number in every page

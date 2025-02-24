@@ -58,7 +58,7 @@ const loginForm = async () => {
     const data = await login(formUsername.value, formPassword.value);
     statusMessage.value = 'Login erfolgreich!';
     statusType.value = 'success';
-    router.push('/houses');
+    router.push('/');
   } catch (error) {
     statusMessage.value = 'Login fehlgeschlagen';
     statusType.value = 'error';

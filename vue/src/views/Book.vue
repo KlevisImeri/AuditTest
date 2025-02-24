@@ -156,14 +156,40 @@ const entries = ref([]);
 const error = ref<string | null>(null);
 const houseId = route.params.houseId;
 const { year, month, day } = route.query;
+// console.log(year, month, day)
 
+//You dont need to validate but we did a dumb validation Houses.vue has better valiadation
 const formattedDate = computed(() => {
-  if (year && month && day) {
-    const date = new Date(Number(year), Number(month) - 1, Number(day));
-    const monthFormatter = new Intl.DateTimeFormat('de-DE', { month: 'long' });
-    return `${date.getDate()} ${monthFormatter.format(date)} ${date.getFullYear()}`;
+  const parts = [];
+
+  if (day) {
+    const dayNum = Number(day);
+    if (!isNaN(dayNum)) {
+      const isValidDay = dayNum >= 1 && dayNum <= 31;
+      if (isValidDay) parts.push(dayNum.toString());
+    }
   }
-  return '';
+
+  if (month) {
+    const monthNum = Number(month);
+    if (!isNaN(monthNum)) {
+      const isValidMonth = monthNum >= 1 && monthNum <= 12;
+      if (isValidMonth) {
+        const formatter = new Intl.DateTimeFormat('de-DE', { month: 'long' });
+        const dummyDate = new Date(2000, monthNum - 1, 1);
+        parts.push(formatter.format(dummyDate));
+      }
+    }
+  }
+
+  if (year) {
+    const yearNum = Number(year);
+    if (!isNaN(yearNum)) {
+      parts.push(yearNum.toString());
+    }
+  }
+
+  return parts.join(' ');
 });
 
 onMounted(async () => {
