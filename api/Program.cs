@@ -41,51 +41,51 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-});
-// JWT Authentication with RSA
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
- .AddJwtBearer(options =>
- {
-     options.SaveToken = true;
-     options.TokenValidationParameters = new TokenValidationParameters
-     {
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
         ValidateAudience = false,
-     };
- });
+    };
+});
 
 
 // Kestrel configuration with HTTPS
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(443, listenOptions =>
-    {
-        var certificate = X509Certificate2.CreateFromPemFile(
-            "/etc/ssl/certs/domain.cert.pem",
-            "/etc/ssl/private/private.key.pem"
-        );
-        listenOptions.UseHttps(options => {
-            options.ServerCertificate = certificate;
-            options.ServerCertificateSelector = (connectionContext, name) => {
-                return certificate;
-            };
-        });
-    });
-    
-    serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
-});
+// builder.WebHost.ConfigureKestrel(serverOptions =>
+// {
+//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     {
+//         var certificate = X509Certificate2.CreateFromPemFile(
+//             "/etc/ssl/certs/domain.cert.pem",
+//             "/etc/ssl/private/private.key.pem"
+//         );
+//         listenOptions.UseHttps(options => {
+//             options.ServerCertificate = certificate;
+//             options.ServerCertificateSelector = (connectionContext, name) => {
+//                 return certificate;
+//             };
+//         });
+//     });
+//     
+//     serverOptions.Limits.MaxRequestBodySize = long.MaxValue;
+// });
 
 
-builder.Services.Configure<HostFilteringOptions>(options =>
-{
-    options.AllowedHosts = new List<string>
-    {
-        "api.shkf-ks.org",
-        "[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]"
-    };
-});
+// builder.Services.Configure<HostFilteringOptions>(options =>
+// {
+//     options.AllowedHosts = new List<string>
+//     {
+//         "api.shkf-ks.org",
+//         "[2a02:ab88:c0c:4c00:9cb6:b921:5967:4365]",
+//         "[2a02:ab88:c0c:4c00::3299]"
+//         "localhost"
+//     };
+// });
 
 // File upload configuration
 builder.Services.Configure<FormOptions>(options =>
@@ -113,4 +113,4 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+app.Run("http://*:9000");
