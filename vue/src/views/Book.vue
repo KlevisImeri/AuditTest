@@ -67,9 +67,9 @@
              <td class="border print:hidden">
               <select v-model.number="entry.type" 
                 @input="entry.edited = true">
-                <option :value="0">Tag</option>
-                <option :value="1">Belüftung</option>
-                <option :value="2">Wasser</option>
+                <option :value="0">Kommunikationsbuch</option>
+                <option :value="1">Belüftung Räume</option>
+                <option :value="2">Leitungsspülung von Trinkwasserleitungen</option>
               </select>
             </td>
 
@@ -179,9 +179,9 @@ const houseId = route.params.houseId;
 const { year, month, day, type } = route.query;
 // console.log(year, month, day)
 const toGerman = {
-  0: 'Tag',
-  1: 'Belüftung',
-  2: 'Wasser',
+  0: undefined,
+  1: 'Belüftung Räume',
+  2: 'Leitungsspülung von Trinkwasserleitungen',
   // '': 'Alle', //it cant be this
 };
 //You dont need to validate but we did a dumb validation Houses.vue has better valiadation

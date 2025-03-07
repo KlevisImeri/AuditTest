@@ -53,9 +53,9 @@
 
         <select v-model="entryType" class="border p-2 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">Alle</option>
-          <option value="0">Tag</option>
-          <option value="1">Belüftung</option>
-          <option value="2">Wasser</option>
+          <option :value="0">Kommunikationsbuch</option>
+          <option :value="1">Belüftung Räume</option>
+          <option :value="2">Leitungsspülung von Trinkwasserleitungen</option>
         </select>
 
         <div class="flex justify-between">
