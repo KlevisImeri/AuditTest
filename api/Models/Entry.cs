@@ -8,7 +8,7 @@ public class Entry {
   public int? Month { get; set; }
   public int? Day { get; set; }
   [BindNever] public House? House { get; set; }
-  public EntryType Type { get; set;} = EntryType.Day;
+  public EntryType? Type { get; set;} = EntryType.Day;
   public string? HouseNumber { get; set; }
   public string? RoomNumber { get; set; }
   public string? RepairDescription { get; set; }

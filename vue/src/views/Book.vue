@@ -7,7 +7,7 @@
         <thead class="report-header">
 
           <tr>
-            <th colspan="10">
+            <th colspan="9">
               <div class="flex items-center justify-between font-bold mb-3 p-3">
                 <p class="text-lg font-bold mr-2">Kommunikationsbuch</p>
                 <div class="flex flex-col items-center">
