@@ -12,10 +12,9 @@
                 <p class="text-lg font-bold mr-2">Kommunikationsbuch</p>
                 <div class="flex flex-col items-center">
                   <p class="text-md">Gebäudename: {{ address }}</p>
-                  <div class="flex flex-row items-center">
-                    <p class="text-md text-right">Monat und Jahr: {{ formattedDate }}</p>
-                    <p class="text-md text-left ml-20">{{ toGerman[type] }}</p>
-                  </div>
+                  <div class="flex justify-center items-center"> 
+                    <p class="text-md">Monat und Jahr: {{ formattedDate }}</p>
+                    <p v-if="toGerman[type]" class="text-md ml-20">{{ toGerman[type] }}</p> </div>
                 </div>
                 <p class="text-md">K-V-I Gebäudemanagement</p>
               </div>
@@ -227,7 +226,6 @@ onMounted(async () => {
     }
     entries.value = await getEntries(houseId, year, month, day, type);
     entries.value.forEach(entry => entry.edited = false);
-    console.debug(entries.value[0].id)
     console.debug("Entries: ", entries.value)
   } catch (err) {
     error.value = err as Error;

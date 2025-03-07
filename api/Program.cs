@@ -25,7 +25,7 @@ builder.Services
       policy.WithOrigins(
               "http://localhost:9000",
               "http://localhost:5173",
-              "https://klevisimeri.github.io/AuditTest/"
+              "https://klevisimeri.github.io" //TODO: AuditTest
             )
             .AllowAnyMethod()
             .AllowAnyHeader();
