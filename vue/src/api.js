@@ -46,13 +46,14 @@ export async function getHouseById(id) {
   }
 }
 
-export async function getEntries(houseId, year, month, day) {
+export async function getEntries(houseId, year, month, day, type) {
   const params = new URLSearchParams();
 
   if (houseId) params.append('houseId', houseId);
   if (year) params.append('year', year);
   if (month) params.append('month', month);
   if (day) params.append('day', day);
+  if (type) params.append('type', type);
 
   try {
     return await fetchData(`${API}/Entries?${params}`);

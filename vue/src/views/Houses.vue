@@ -32,6 +32,7 @@
           :class="{'bg-red-200': yearError}"
           @input="validateYear"
         />
+
         <input
           v-model="month"
           type="number"
@@ -40,6 +41,7 @@
           :class="{'bg-red-200': monthError}"
           @input="validateMonth"
         />
+
         <input
           v-model="day"
           type="number"
@@ -48,6 +50,14 @@
           :class="{'bg-red-200': dayError}"
           @input="validateDay"
         />
+
+        <select v-model="entryType" class="border p-2 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Alle</option>
+          <option value="0">Tag</option>
+          <option value="1">Belüftung</option>
+          <option value="2">Wasser</option>
+        </select>
+
         <div class="flex justify-between">
           <button @click="submitData" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
             Submit
@@ -57,6 +67,7 @@
           </button>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -74,10 +85,13 @@ const year = ref('')
 const month = ref('')
 const day = ref('')
 let selectedHouseId = ref(-1)
+let entryType = ref("")
 
 const yearError = ref(false)
 const monthError = ref(false)
 const dayError = ref(false)
+
+
 
 onMounted(async () => {
   try {
@@ -147,6 +161,7 @@ const submitData = async () => {
       year: year.value ? parseInt(year.value) : undefined,
       month: month.value ? parseInt(month.value) : undefined,
       day: day.value ? parseInt(day.value) : undefined,
+      type: entryType.value ? parseInt(entryType.value) : undefined,
     }
     
     await router.push({ path: `/houses/${selectedHouseId.value}`, query })

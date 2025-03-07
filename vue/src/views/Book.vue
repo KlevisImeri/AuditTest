@@ -7,12 +7,15 @@
         <thead class="report-header">
 
           <tr>
-            <th colspan="9">
+            <th colspan="10">
               <div class="flex items-center justify-between font-bold mb-3 p-3">
                 <p class="text-lg font-bold mr-2">Kommunikationsbuch</p>
                 <div class="flex flex-col items-center">
                   <p class="text-md">Gebäudename: {{ address }}</p>
-                  <p class="text-md text-right">Monat und Jahr: {{ formattedDate }}</p>
+                  <div class="flex flex-row items-center">
+                    <p class="text-md text-right">Monat und Jahr: {{ formattedDate }}</p>
+                    <p class="text-md text-left ml-20">{{ toGerman[type] }}</p>
+                  </div>
                 </div>
                 <p class="text-md">K-V-I Gebäudemanagement</p>
               </div>
@@ -24,6 +27,7 @@
             <th class="border px-1">Haus-Nr.</th>
             <th class="border px-1">Raum-Nr.</th>
             <th class="border px-55">Reparatur (Beschreibungstext)</th>
+            <th class="border px-1 print:hidden">Typ</th> 
             <th class="border px-1">festgestellt am:</th>
             <th class="border px-5">erledigt am:</th>
             <th class="border px-1">Uhrzeit bei Notleinsatz:</th>
@@ -44,6 +48,7 @@
                 @input="entry.edited = true"
               />
             </td>
+
             <td class="border text-center">
               <input 
                 v-model="entry.roomNumber" 
@@ -51,6 +56,7 @@
                 @input="entry.edited = true"
               />
             </td>
+
             <td class="border">
               <Textarea 
                 v-model="entry.repairDescription" 
@@ -58,6 +64,16 @@
                 @input="entry.edited = true"
               ></Textarea>
             </td>
+
+             <td class="border print:hidden">
+              <select v-model.number="entry.type" 
+                @input="entry.edited = true">
+                <option :value="0">Tag</option>
+                <option :value="1">Belüftung</option>
+                <option :value="2">Wasser</option>
+              </select>
+            </td>
+
             <td class="border">
               <input 
                 v-model="entry.noticedDate" 
@@ -67,6 +83,7 @@
               />
               <div class="hidden print:block">{{ entry.noticedDate }}</div>
             </td>
+            
             <td class="border">
               <input 
                 v-model="entry.completedDate" 
@@ -76,6 +93,7 @@
               />
               <div class="hidden print:block">{{ entry.completedDate }}</div>
             </td>
+
             <td class="border">
               <input 
                 v-model="entry.emergencyStartTime" 
@@ -83,6 +101,7 @@
                 @input="entry.edited = true"
               />
             </td>
+
             <td class="border">
               <input 
                 v-model="entry.travelInfo" 
@@ -90,6 +109,7 @@
                 @input="entry.edited = true"
               />
             </td>
+
             <td class="border">
               <input 
                 v-model="entry.feedbackToOffice" 
@@ -113,6 +133,8 @@
             </td>
             <td class="border p-1">
               Bearbeitet:
+            </td>
+            <td class="border print:hidden">
             </td>
             <td class="border">
             </td>
@@ -153,11 +175,16 @@ import Textarea from '../components/Textarea.vue'
 const route = useRoute();
 const address = ref('');
 const entries = ref([]);
-const error = ref<string | null>(null);
+const error = ref<Error | null>(null);
 const houseId = route.params.houseId;
-const { year, month, day } = route.query;
+const { year, month, day, type } = route.query;
 // console.log(year, month, day)
-
+const toGerman = {
+  0: 'Tag',
+  1: 'Belüftung',
+  2: 'Wasser',
+  // '': 'Alle', //it cant be this
+};
 //You dont need to validate but we did a dumb validation Houses.vue has better valiadation
 const formattedDate = computed(() => {
   const parts = [];
@@ -198,11 +225,12 @@ onMounted(async () => {
       const house = await getHouseById(houseId);
       address.value = house.address;
     }
-    entries.value = await getEntries(houseId, year, month, day);
+    entries.value = await getEntries(houseId, year, month, day, type);
     entries.value.forEach(entry => entry.edited = false);
-    // console.debug(entries)
+    console.debug(entries.value[0].id)
+    console.debug("Entries: ", entries.value)
   } catch (err) {
-    error.value = 'Failed to load data.';
+    error.value = err as Error;
     console.error(err);
   }
 });
@@ -218,9 +246,9 @@ const saveChanges = async () => {
     const idsToDelete = []; // Array to hold IDs *only* for API call
 
     entriesToDelete.forEach(entry => {
-        if (entry.id) { // Check if ID exists *before* adding to array
-            idsToDelete.push(entry.id);
-        }
+      if (entry.id) { // Check if ID exists *before* adding to array
+        idsToDelete.push(entry.id);
+      }
     });
     if (idsToDelete.length > 0) {
       await deleteEntries(idsToDelete);
@@ -231,11 +259,11 @@ const saveChanges = async () => {
     if (editedEntries.length > 0) {
       await updateEntries(editedEntries);
     }
-    entries.value = await getEntries(houseId, year, month, day);
+    entries.value = await getEntries(houseId, year, month, day, type);
     entries.value.forEach(entry => entry.edited = false);
 
   } catch (err) {
-    error.value = 'Failed to save changes.';
+    error.value = err as Error;
     console.error(err);
   }
 };
@@ -249,6 +277,7 @@ const addNewEntry = () => {
     houseNumber: '',
     roomNumber: '',
     repairDescription: '',
+    type: Number(type),
     noticedDate: '',
     completedDate: '',
     emergencyStartTime: '',

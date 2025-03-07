@@ -1,64 +1,98 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http.Features;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.HostFiltering;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add logging configuration
-builder.Logging.AddDebug();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-// Database context
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=Audit.db"));
+builder.Services
+  .AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite("Data Source=Audit.db")
+  );
 
-// CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
-});
+builder.Services
+  .AddCors(options => {
+    options.AddPolicy("AllowedOrigins", policy => {
+      policy.WithOrigins(
+              "http://localhost:9000",
+              "http://localhost:5173",
+              "https://klevisimeri.github.io/AuditTest/"
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+  });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<LocalAccessControl>();
  
-// Configure JWT authentication
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-builder.Services.AddAuthentication(options =>
-{
+var jwtKeyString = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKeyString)) throw new ArgumentNullException(nameof(jwtKeyString), "Jwt:Key configuration is missing or empty.");
+var key = Encoding.ASCII.GetBytes(jwtKeyString);
+builder.Services
+  .AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
+  })
+  .AddJwtBearer(options => {
     options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false,
+    options.TokenValidationParameters = new TokenValidationParameters {
+      ValidateIssuerSigningKey = true,
+      IssuerSigningKey = new SymmetricSecurityKey(key),
+      ValidateIssuer = false,
+      ValidateAudience = false,
     };
+  });
+
+builder.Services.Configure<FormOptions>(options => {
+  options.MultipartBodyLengthLimit = long.MaxValue;
 });
 
+builder.Services
+  .AddControllers()
+  .AddJsonOptions(options => {
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+  });
 
+builder.Services
+  .AddHttpLogging(logging =>{
+    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.None;
+  });
+
+var app = builder.Build();
+
+
+
+if (app.Environment.IsDevelopment()) {
+  app.UseSwagger();
+  app.UseSwaggerUI();
+}
+app.UseHttpLogging();
+app.UseHttpsRedirection();
+app.UseCors("AllowedOrigins");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+app.Run("http://*:9000");
+
+
+
+// using System.Security.Cryptography;
+// using System.Security.Cryptography.X509Certificates;
+// using Microsoft.AspNetCore.HostFiltering;
 // Kestrel configuration with HTTPS
 // builder.WebHost.ConfigureKestrel(serverOptions =>
 // {
-//     serverOptions.ListenAnyIP(443, listenOptions =>
+//     serverOptions.ListenAnyIP(9000, listenOptions =>
 //     {
 //         var certificate = X509Certificate2.CreateFromPemFile(
 //             "/etc/ssl/certs/domain.cert.pem",
@@ -87,30 +121,3 @@ builder.Services.AddAuthentication(options =>
 //     };
 // });
 
-// File upload configuration
-builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = long.MaxValue;
-});
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options => {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
-
-var app = builder.Build();
-
-// Configure pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins");
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run("http://*:9000");
