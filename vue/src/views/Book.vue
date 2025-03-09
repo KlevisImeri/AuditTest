@@ -30,28 +30,30 @@
             <th class="border px-1">festgestellt am:</th>
             <th class="border px-5">erledigt am:</th>
             <th class="border px-1">Uhrzeit bei Notleinsatz:</th>
-            <th class="border px-1">Anfahrt</th>
+            <th class="border px-4">Anfahrt</th>
             <th class="border px-1">Rückinfo ans Amt</th> 
           </tr>
 
         </thead>
 
         <tbody class="report-content">
-          <tr v-for="(entry, index) in entries" :key="entry.id" class="text-center" 
+          <tr v-for="(entry, index) in entries" :key="entry.id" 
             :class="{ 'bg-red-200': entry.deleted, 'bg-gray-200': entry.edited}" >
 
-            <td class="border text-center">{{ index + 1 }}</td>  <td class="border text-center">
-              <input 
-                v-model="entry.houseNumber" 
-                class="w-full p-1" 
+            <td class="border text-center">{{ index + 1 }}</td>  
+
+            <td class="border text-center">
+              <Textarea 
+                v-model="entry.houseNumber"
+                :wfull="false"
                 @input="entry.edited = true"
               />
             </td>
 
             <td class="border text-center">
-              <input 
+              <Textarea 
                 v-model="entry.roomNumber" 
-                class="w-full p-1" 
+                :wfull="false"
                 @input="entry.edited = true"
               />
             </td>
@@ -59,7 +61,6 @@
             <td class="border">
               <Textarea 
                 v-model="entry.repairDescription" 
-                class="w-full p-1" 
                 @input="entry.edited = true"
               ></Textarea>
             </td>
@@ -73,7 +74,7 @@
               </select>
             </td>
 
-            <td class="border">
+            <td class="border text-center">
               <input 
                 v-model="entry.noticedDate" 
                 type="date" 
@@ -83,7 +84,7 @@
               <div class="hidden print:block">{{ formatDateGerman(entry.noticedDate)  }}</div>
             </td>
             
-            <td class="border">
+            <td class="border text-center">
               <input 
                 v-model="entry.completedDate" 
                 type="date" 
@@ -94,25 +95,22 @@
             </td>
 
             <td class="border">
-              <input 
+              <Textarea 
                 v-model="entry.emergencyStartTime" 
-                class="w-full p-1" 
                 @input="entry.edited = true"
               />
             </td>
 
             <td class="border">
-              <input 
+              <Textarea 
                 v-model="entry.travelInfo" 
-                class="w-full p-1" 
                 @input="entry.edited = true"
               />
             </td>
 
             <td class="border">
-              <input 
+              <Textarea 
                 v-model="entry.feedbackToOffice" 
-                class="w-full p-1" 
                 @input="entry.edited = true"
               />
             </td>
@@ -123,30 +121,21 @@
 
           </tr>
           <tr>
-            <td class="border text-center">
-              {{ entries.length + 1 }}
-            </td>
-            <td class="border text-center">
-            </td>
-            <td class="border text-center">
-            </td>
-            <td class="border p-1">
-              Bearbeitet:
-            </td>
-            <td class="border print:hidden">
+            <td class="border text-center">{{ entries.length + 1 }}</td>
+            <td class="border text-center"></td>
+            <td class="border text-center"></td>
+            <td class="border p-1">Bearbeitet:</td>
+            <td class="border print:hidden"></td>
+            <td class="border"></td>
+            <td class="border"></td>
+            <td class="border p-1">Anfahrt</td>
+            <td class="border">
+              <Textarea 
+                v-model="anfahrt"
+              />
             </td>
             <td class="border">
-            </td>
-            <td class="border">
-            </td>
-            <td class="border p-1">
-              Anfahrt
-            </td>
-            <td class="border">
-              <input class="w-full p1" />
-            </td>
-            <td class="border">
-              <input class="w-full p1" />
+              <Textarea v-model="placeholder2" class=" p1" />
             </td>
           </tr>
 
@@ -177,6 +166,8 @@ const entries = ref([]);
 const error = ref<Error | null>(null);
 const houseId = route.params.houseId;
 const { year, month, day, type } = route.query;
+const anfahrt = ref('');
+const placeholder2 = ref();
 // console.log(year, month, day)
 const toGerman = {
   0: undefined,

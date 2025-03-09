@@ -2,18 +2,35 @@
   <textarea
     ref="textarea"
     v-model="textValue"
+    class="print:hidden p-1"
+    :class="wfull ? 'w-full' : `w-${width}`"
     @input="resize"
     rows="1"
   ></textarea>
+  <div 
+    class="hidden print:block whitespace-pre-wrap break-all p-1"
+  >
+    {{ textValue || '&nbsp;' }}
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from 'vue';
 
+
 const props = defineProps({
   modelValue: String,
   text: String,
+  wfull: {
+    type: Boolean,
+    default: true
+  },
+  width: {
+    type: Number,
+    default: 20 
+  }
 });
+
 
 const emit = defineEmits(['update:modelValue', 'update:text', 'update:edited']);
 
@@ -49,8 +66,10 @@ onMounted(() => {
 </script>
 
 <style>
+
 textarea {
   overflow: hidden;
   resize: none;
+
 }
 </style>
