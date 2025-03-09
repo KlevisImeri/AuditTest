@@ -187,9 +187,15 @@ const toGerman = {
 
 const formatDateGerman = (dateString: string) => {
   if (!dateString) return '';
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('de-DE');
+  
+  const parts = dateString.split('-');
+  if (parts.length !== 3) return '';
+
+  const [year, month, day] = parts;
+  const paddedDay = day.padStart(2, '0');
+  const paddedMonth = month.padStart(2, '0');
+
+  return `${paddedDay}.${paddedMonth}.${year}`;
 };
 
 //You dont need to validate but we did a dumb validation Houses.vue has better valiadation
