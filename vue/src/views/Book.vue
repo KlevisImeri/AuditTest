@@ -80,7 +80,7 @@
                 class="w-full p-1 print:hidden" 
                 @input="entry.edited = true"
               />
-              <div class="hidden print:block">{{ entry.noticedDate }}</div>
+              <div class="hidden print:block">{{ formatDateGerman(entry.noticedDate)  }}</div>
             </td>
             
             <td class="border">
@@ -90,7 +90,7 @@
                 class="w-full p-1 print:hidden" 
                 @input="entry.edited = true"
               />
-              <div class="hidden print:block">{{ entry.completedDate }}</div>
+              <div class="hidden print:block">{{ formatDateGerman(entry.completedDate) }}</div>
             </td>
 
             <td class="border">
@@ -184,6 +184,14 @@ const toGerman = {
   2: 'Leitungsspülung von Trinkwasserleitungen',
   // '': 'Alle', //it cant be this
 };
+
+const formatDateGerman = (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('de-DE');
+};
+
 //You dont need to validate but we did a dumb validation Houses.vue has better valiadation
 const formattedDate = computed(() => {
   const parts = [];
