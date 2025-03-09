@@ -45,7 +45,7 @@
             <td class="border text-center">
               <Textarea 
                 v-model="entry.houseNumber"
-                :wfull="false"
+                :wfull="true"
                 @input="entry.edited = true"
               />
             </td>
@@ -53,7 +53,7 @@
             <td class="border text-center">
               <Textarea 
                 v-model="entry.roomNumber" 
-                :wfull="false"
+                :wfull="true"
                 @input="entry.edited = true"
               />
             </td>

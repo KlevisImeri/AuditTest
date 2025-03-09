@@ -7,15 +7,13 @@
     @input="resize"
     rows="1"
   ></textarea>
-  <div 
-    class="hidden print:block whitespace-pre-wrap break-all p-1"
-  >
+  <div class="hidden print:block whitespace-pre-wrap break-all p-1" >
     {{ textValue || '&nbsp;' }}
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue';
 
 
 const props = defineProps({
@@ -60,16 +58,19 @@ watch(() => textValue.value, () => {
 onMounted(() => {
   nextTick(() => {
     resize();
-    setTimeout(resize, 50);
+    setTimeout(resize, 51);
+    window.addEventListener('resize', resize);
   });
 });
+
+onUnmounted(() => {
+  window.removeEventListener('resize', resize);
+})
 </script>
 
 <style>
-
 textarea {
   overflow: hidden;
   resize: none;
-
 }
 </style>
