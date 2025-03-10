@@ -48,7 +48,7 @@ const checkToken = async () => {
         const today = new Date();
         query.year = today.getFullYear();
         query.month = String(today.getMonth() + 1).padStart(2, '0');
-        query.day = String(today.getDate()).padStart(2, '0');
+        // query.day = String(today.getDate()).padStart(2, '0');
       }
       router.push({ path: `/houses/${data.houseId}`, query });
     } else {

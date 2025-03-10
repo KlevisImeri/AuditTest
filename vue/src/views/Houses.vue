@@ -57,7 +57,7 @@
           <option :value="1">Belüftung Räume</option>
           <option :value="2">Leitungsspülung von Trinkwasserleitungen</option>
         </select>
-
+ 
         <div class="flex justify-between">
           <button @click="submitData" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition-colors">
             Submit
@@ -161,7 +161,7 @@ const submitData = async () => {
       year: year.value ? parseInt(year.value) : undefined,
       month: month.value ? parseInt(month.value) : undefined,
       day: day.value ? parseInt(day.value) : undefined,
-      type: entryType.value ? parseInt(entryType.value) : undefined,
+      type: entryType.value === "" ? undefined : parseInt(entryType.value)
     }
     
     await router.push({ path: `/houses/${selectedHouseId.value}`, query })

@@ -1,9 +1,9 @@
 <template>
-  <div class="p-3">
+  <div class="p-3 mb-20">
     <div v-if="error" class="bg-red-500 text-white p-4 rounded">
       {{ error }}
     </div><div v-else>
-      <table class="report-header"> 
+      <table id="table" class="report-header"> 
         <thead class="report-header">
 
           <tr>
@@ -143,16 +143,27 @@
       </table>
     </div>
 
-    <div class="mt-4 flex">
-      <AddIcon class="text-blue-500 hover:text-red-500 print:hidden" @click="addNewEntry" />
-      <SaveIcon class="text-green-500 hover:text-red-500 print:hidden" @click="saveChanges" />
+    <div class="fixed bottom-0 left-0 ml-4 mb-4 flex space-x-4 z-50">
+      <button
+        class="print:hidden text-blue-500 hover:text-red-500 transition-colors"
+        @click="addNewEntry"
+      >
+        <AddIcon class="inline-block" />
+      </button>
+      <button
+        class="print:hidden disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        @click="saveChanges"
+        :disabled="isSaving"
+      >
+        <SaveIcon class="text-green-500 hover:text-red-500 inline-block" /> 
+      </button>
     </div>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onUnmounted} from 'vue'
+import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { getHouseById, getEntries, updateEntries, deleteEntries } from '@/api.js'
 import BinIcon from '../components/icons/Bin.vue'
@@ -168,6 +179,7 @@ const houseId = route.params.houseId;
 const { year, month, day, type } = route.query;
 const anfahrt = ref('');
 const placeholder2 = ref();
+const isSaving = ref(false);
 // console.log(year, month, day)
 const toGerman = {
   0: undefined,
@@ -231,7 +243,7 @@ onMounted(async () => {
     }
     entries.value = await getEntries(houseId, year, month, day, type);
     entries.value.forEach(entry => entry.edited = false);
-    console.debug("Entries: ", entries.value)
+    // console.debug("Entries: ", entries.value)
   } catch (err) {
     error.value = err as Error;
     console.error(err);
@@ -243,6 +255,9 @@ onUnmounted(async () => {
 });
 
 const saveChanges = async () => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+
   try {
     if(entries.value.length === 0) return;
     const entriesToDelete = entries.value.filter(entry => entry.deleted);
@@ -268,10 +283,12 @@ const saveChanges = async () => {
   } catch (err) {
     error.value = err as Error;
     console.error(err);
+  } finally {
+    isSaving.value = false;
   }
 };
 
-const addNewEntry = () => {  
+const addNewEntry = async () => {  
   const newEntry = {
     houseId: Number(houseId), 
     year: Number(year),
@@ -291,6 +308,15 @@ const addNewEntry = () => {
   console.log(newEntry);
 
   entries.value.push(newEntry);
+
+
+  await nextTick();
+  const table = document.getElementById('table');
+  window.scrollTo({
+    top: table.scrollHeight,
+    left: 0,  
+    behavior: "smooth"
+  });
 };
 
 onUnmounted(() => {
