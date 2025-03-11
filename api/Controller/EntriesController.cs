@@ -36,7 +36,7 @@ public class LocalEntriesController : ControllerBase {
       var today = DateTime.Today;
       year = today.Year;
       month = today.Month;
-      day = today.Day;
+      // day = today.Day; //TODO: for the moment we want to allow the whole month
     }
 
     var houseExists = await db.Houses.AnyAsync(h => h.ID == houseId);
@@ -50,6 +50,7 @@ public class LocalEntriesController : ControllerBase {
     if (type.HasValue) query = query.Where(e => e.Type == type);
 
     var results = await query.ToListAsync();
+    // foreach(var res in results) log.LogInformation(res.ToString());
     return Ok(results);
   }
 

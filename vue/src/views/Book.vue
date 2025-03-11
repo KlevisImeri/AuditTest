@@ -29,7 +29,7 @@
             <th class="border px-1 print:hidden">Typ</th> 
             <th class="border px-1">festgestellt am:</th>
             <th class="border px-5">erledigt am:</th>
-            <th class="border px-1">Uhrzeit bei Notleinsatz:</th>
+            <th class="border px-1">Uhrzeit bei Noteinsatz:</th>
             <th class="border px-4">Anfahrt</th>
             <th class="border px-1">Rückinfo ans Amt</th> 
           </tr>
@@ -241,9 +241,10 @@ onMounted(async () => {
       const house = await getHouseById(houseId);
       address.value = house.address;
     }
+    console.debug(houseId, year, month, day, type);
     entries.value = await getEntries(houseId, year, month, day, type);
     entries.value.forEach(entry => entry.edited = false);
-    // console.debug("Entries: ", entries.value)
+    console.debug("Entries: ", entries.value)
   } catch (err) {
     error.value = err as Error;
     console.error(err);

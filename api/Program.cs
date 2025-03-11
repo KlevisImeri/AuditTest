@@ -34,7 +34,7 @@ builder.Services
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<LocalAccessControl>();
- 
+
 var jwtKeyString = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKeyString)) throw new ArgumentNullException(nameof(jwtKeyString), "Jwt:Key configuration is missing or empty.");
 var key = Encoding.ASCII.GetBytes(jwtKeyString);
