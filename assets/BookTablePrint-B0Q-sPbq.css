@@ -1,0 +1,1 @@
+@media print{.book-table-landscape{page-break-before:always;page:landscape-table}@page landscape-table{size:landscape;margin:.5in}.report-header{display:table-header-group}table.report-container{page-break-after:always;width:100%!important}thead.report-header th{break-inside:avoid}}
